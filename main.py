@@ -319,8 +319,10 @@ def fill_yesterday():
 # ===== LINE Webhook =====
 @app.route("/callback", methods=["POST"])
 def callback():
-    signature = request.headers["X-Line-Signature"]
+    signature = request.headers.get("X-Line-Signature")
     body = request.get_data(as_text=True)
+    if not signature:
+        abort(400)
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
