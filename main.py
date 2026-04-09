@@ -348,6 +348,7 @@ HELP_TEXT = (
 def handle_message(event):
     text = event.message.text.strip()
     user_id = event.source.user_id
+    print(f"收到來自 {user_id} 的訊息: {text}", flush=True)
     client = get_gspread_client()
 
     # 設定名字
