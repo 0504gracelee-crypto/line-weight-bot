@@ -1,0 +1,35 @@
+services:
+  # ===== 主要 Web 服務 =====
+  - type: web
+    name: line-weight-bot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: LINE_CHANNEL_ACCESS_TOKEN
+        sync: false
+      - key: LINE_CHANNEL_SECRET
+        sync: false
+      - key: SPREADSHEET_ID
+        sync: false
+      - key: GOOGLE_CREDENTIALS_JSON
+        sync: false
+      - key: PORT
+        value: "8080"
+
+  # ===== 23點提醒 Cron Job =====
+  - type: cron
+    name: line-weight-bot-remind
+    runtime: python
+    buildCommand: pip install requests
+    schedule: "0 15 * * *"   # UTC 15:00 = 台灣時間 23:00
+    startCommand: >
+      python -c "
+      import requests, os;
+      url = os.environ.get('APP_URL', '').rstrip('/') + '/remind';
+      r = requests.get(url, timeout=30);
+      print(r.text)
+      "
+    envVars:
+      - key: APP_URL
+        sync: false
